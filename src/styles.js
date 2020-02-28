@@ -64,7 +64,7 @@ export const RouteText = styled.Text`
   font-weight: bold;
 `;
 
-export const ButtonText = styled.Text`
+export const BoldText = styled.Text`
   color: #000;
   font-weight: bold;
 `;
@@ -78,8 +78,8 @@ export const OverlayData = styled.View`
   width: 100%;
 `;
 
-export const style = StyleSheet.create({
-  mapStyle: {
+export const mapStyle = StyleSheet.create({
+  dimensions: {
     width: Dimensions.get('window').width,
     height: Dimensions.get('window').height,
   },

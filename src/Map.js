@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
-import MapView, { PROVIDER_GOOGLE, Marker, Callout } from 'react-native-maps';
+
 import { View, Text, PermissionsAndroid, Alert } from 'react-native';
+import MapView, { PROVIDER_GOOGLE, Marker, Callout } from 'react-native-maps';
 
 import Geolocation from 'react-native-geolocation-service';
 import getDirections from 'react-native-google-maps-directions';
@@ -8,24 +9,24 @@ import GooglePlacesInput from './componentes/AutoComplete';
 import MapDirections from './componentes/DirectionsService';
 
 import {
+  mapStyle,
   Container,
   InputsContainer,
   InputContent,
   IconLigature,
   ButtonNavigate,
   RouteData,
-  ButtonText,
+  BoldText,
   RouteText,
-  style,
   OverlayData,
 } from './styles';
 
 function MapComponent() {
+  const [address, setAddress] = useState([]);
   const [coordinates, setCoordinates] = useState([]);
   const [routeStatus, setRouteStatus] = useState({});
-  const [address, setAddress] = useState([]);
 
-  const { width, height } = style.mapStyle;
+  const { width, height } = mapStyle.dimensions;
 
   const [position, setPosition] = useState({
     latitude: -22.9707112,
@@ -37,17 +38,15 @@ function MapComponent() {
   const ref = useRef({
     firstInput: '',
     secondInput: '',
-    mapView: {},
-    initialRoute: {},
-    routeStatus: {},
+    mapView: '',
   });
 
   const handleClearInput = (e, route) => {
-    if (coordinates.length >= 2) setCoordinates({});
+    if (coordinates.length >= 2) setCoordinates([]);
 
-    if (ref.current.firstInput && route === 'start') {
+    if (route === 'start') {
       ref.current.firstInput.setAddressText('');
-    } else if (ref.current.secondInput && route === 'end') {
+    } else {
       ref.current.secondInput.setAddressText('');
     }
   };
@@ -109,7 +108,7 @@ function MapComponent() {
         <MapView
           ref={c => (ref.current.mapView = c)}
           provider={PROVIDER_GOOGLE}
-          style={style.mapStyle}
+          style={mapStyle.dimensions}
           showsUserLocation
           initialRegion={{
             latitude: position.latitude,
@@ -122,7 +121,8 @@ function MapComponent() {
               <Marker key={`coordinate_${index}`} coordinate={coordinate}>
                 <Callout>
                   <View style={{ width: 180 }}>
-                    <Text>{address[index]}</Text>
+                    <BoldText>{address[index].area}</BoldText>
+                    <Text>{address[index].address}</Text>
                   </View>
                 </Callout>
               </Marker>
@@ -162,11 +162,23 @@ function MapComponent() {
               top={100}
               onPress={e => handleClearInput(e, 'start')}
               onSubmit={(data, details = null) => {
-                ref.current.initialRoute = {
-                  latitude: details.geometry.location.lat,
-                  longitude: details.geometry.location.lng,
-                  startAddress: data.description,
-                };
+                setAddress([
+                  ...address,
+                  {
+                    address: `${data.terms[0].value.replace(
+                      'Avenida',
+                      'Av.',
+                    )} - ${data.terms[1].value}`,
+                    area: data.terms[2].value,
+                  },
+                ]);
+                setCoordinates([
+                  ...coordinates,
+                  {
+                    latitude: details.geometry.location.lat,
+                    longitude: details.geometry.location.lng,
+                  },
+                ]);
               }}
             />
             <IconLigature />
@@ -178,14 +190,17 @@ function MapComponent() {
               onPress={e => handleClearInput(e, 'end')}
               onSubmit={(data, details = null) => {
                 setAddress([
-                  ref.current.initialRoute.startAddress,
-                  data.description,
+                  ...address,
+                  {
+                    address: `${data.terms[0].value.replace(
+                      'Avenida',
+                      'Av.',
+                    )} - ${data.terms[1].value}`,
+                    area: data.terms[2].value,
+                  },
                 ]);
                 setCoordinates([
-                  {
-                    latitude: ref.current.initialRoute.latitude,
-                    longitude: ref.current.initialRoute.longitude,
-                  },
+                  ...coordinates,
                   {
                     latitude: details.geometry.location.lat,
                     longitude: details.geometry.location.lng,
@@ -206,7 +221,7 @@ function MapComponent() {
           )}
 
           <ButtonNavigate onPress={handleGetGoogleMapDirections}>
-            <ButtonText>Iniciar</ButtonText>
+            <BoldText>Iniciar</BoldText>
           </ButtonNavigate>
         </OverlayData>
       )}
