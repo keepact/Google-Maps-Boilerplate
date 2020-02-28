@@ -1,7 +1,8 @@
-import React, { useState, useRef } from 'react';
-import MapView, { PROVIDER_GOOGLE } from 'react-native-maps';
-import { View, Dimensions, Text } from 'react-native';
+import React, { useState, useRef, useEffect } from 'react';
+import MapView, { PROVIDER_GOOGLE, Marker, Callout } from 'react-native-maps';
+import { View, Text, PermissionsAndroid, Alert } from 'react-native';
 
+import Geolocation from 'react-native-geolocation-service';
 import getDirections from 'react-native-google-maps-directions';
 import GooglePlacesInput from './componentes/AutoComplete';
 import MapDirections from './componentes/DirectionsService';
@@ -20,10 +21,18 @@ import {
 } from './styles';
 
 function MapComponent() {
-  const { width, height } = Dimensions.get('window');
-
   const [coordinates, setCoordinates] = useState([]);
   const [routeStatus, setRouteStatus] = useState({});
+  const [address, setAddress] = useState([]);
+
+  const { width, height } = style.mapStyle;
+
+  const [position, setPosition] = useState({
+    latitude: -22.9707112,
+    longitude: -43.18644330000001,
+    latitudeDelta: 0.0922,
+    longitudeDelta: 0.0421,
+  });
 
   const ref = useRef({
     firstInput: '',
@@ -42,6 +51,42 @@ function MapComponent() {
       ref.current.secondInput.setAddressText('');
     }
   };
+
+  const requestLocationPermission = async () => {
+    try {
+      const granted = await PermissionsAndroid.request(
+        PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
+        {
+          title: 'Permissão de Localização',
+          message: 'A aplicação precisa da permissão de localização.',
+        },
+      );
+      if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+        Geolocation.getCurrentPosition(
+          pos => {
+            setPosition({
+              latitude: pos.coords.latitude,
+              longitude: pos.coords.longitude,
+              latitudeDelta: 0.0922,
+              longitudeDelta: 0.0421,
+            });
+          },
+          error => {
+            console.tron.log(error);
+            Alert.alert('Houve um erro ao pegar a latitude e longitude.');
+          },
+        );
+      } else {
+        Alert.alert('Permissão de localização não concedida');
+      }
+    } catch (err) {
+      console.tron.log(err);
+    }
+  };
+
+  useEffect(() => {
+    requestLocationPermission();
+  }, []);
 
   const handleGetGoogleMapDirections = () => {
     const data = {
@@ -67,21 +112,22 @@ function MapComponent() {
           style={style.mapStyle}
           showsUserLocation
           initialRegion={{
-            latitude: -22.9035,
-            longitude: -43.2096,
+            latitude: position.latitude,
+            longitude: position.longitude,
             latitudeDelta: 0.015,
             longitudeDelta: 0.0121,
           }}>
           {coordinates.length >= 2 &&
             coordinates.map((coordinate, index) => (
-              <MapView.Marker
-                key={`coordinate_${index}`}
-                coordinate={coordinate}>
-                <MapView.Callout onPress={handleGetGoogleMapDirections}>
-                  <Text>Pressione para realizar a rota</Text>
-                </MapView.Callout>
-              </MapView.Marker>
+              <Marker key={`coordinate_${index}`} coordinate={coordinate}>
+                <Callout>
+                  <View style={{ width: 180 }}>
+                    <Text>{address[index]}</Text>
+                  </View>
+                </Callout>
+              </Marker>
             ))}
+
           {coordinates.length >= 2 && (
             <MapDirections
               waypoints={
@@ -113,12 +159,13 @@ function MapComponent() {
               reference={c => (ref.current.firstInput = c)}
               placeholder="Digite ínicio da rota"
               label="A"
-              top={150}
+              top={100}
               onPress={e => handleClearInput(e, 'start')}
               onSubmit={(data, details = null) => {
                 ref.current.initialRoute = {
                   latitude: details.geometry.location.lat,
                   longitude: details.geometry.location.lng,
+                  startAddress: data.description,
                 };
               }}
             />
@@ -127,9 +174,13 @@ function MapComponent() {
               reference={c => (ref.current.secondInput = c)}
               placeholder="Digite o destino"
               label="B"
-              top={60}
+              top={50}
               onPress={e => handleClearInput(e, 'end')}
               onSubmit={(data, details = null) => {
+                setAddress([
+                  ref.current.initialRoute.startAddress,
+                  data.description,
+                ]);
                 setCoordinates([
                   {
                     latitude: ref.current.initialRoute.latitude,
