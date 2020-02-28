@@ -65,18 +65,36 @@ function GooglePlacesInput({
       debounce={200} // debounce the requests in ms. Set to 0 to remove debounce. By default 0ms.
       renderLeftButton={() => (
         <>
-          <Icon name="brightness-1" color="blue" />
-          <Text>{label}</Text>
+          <Icon
+            name="brightness-1"
+            size={25}
+            color="#0747A6"
+            style={{ top: 7 }}
+          />
+          <Text style={{ color: '#fff', right: 17, top: 10 }}>{label}</Text>
         </>
       )}
       renderRightButton={() => (
-        <TouchableOpacity onPress={onPress}>
-          <Icon name="close" color="#ddd" />
+        <TouchableOpacity
+          style={{ top: 12, right: 12, position: 'absolute' }}
+          onPress={onPress}>
+          <Icon name="close" size={15} color="#000" />
         </TouchableOpacity>
       )}
       styles={{
+        container: {
+          position: 'relative',
+        },
         textInputContainer: {
           width: '100%',
+          backgroundColor: 'rgba(0,0,0,0)',
+          borderBottomWidth: 0,
+          borderTopWidth: 0,
+          shadowOpacity: 0,
+        },
+        textInput: {
+          backgroundColor: '#eee',
+          paddingRight: 20,
         },
         description: {
           fontWeight: 'bold',

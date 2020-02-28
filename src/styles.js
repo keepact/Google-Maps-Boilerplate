@@ -8,7 +8,7 @@ export const Container = styled.View`
 `;
 
 export const InputsContainer = styled.View`
-  height: 200px;
+  height: 110px;
   align-items: center;
   justify-content: center;
   width: 100%;
@@ -22,11 +22,12 @@ export const InputContent = styled.View`
 
 export const IconLigature = styled(Icon).attrs({
   name: 'more-vert',
-  color: 'blue',
+  color: '#0747A6',
+  size: 18,
 })`
   position: absolute;
-  right: 30px;
-  left: 30px;
+  left: 4px;
+  top: 36px;
 `;
 
 export const ButtonNavigate = styled.TouchableOpacity`
@@ -40,7 +41,7 @@ export const ButtonNavigate = styled.TouchableOpacity`
   border-radius: 7px;
   margin-bottom: 15px;
   margin: 0 50px;
-  top: 45%;
+  top: 65%;
   left: 60%;
 `;
 
@@ -48,13 +49,14 @@ export const RouteData = styled.View`
   flex-direction: row;
   justify-content: space-around;
   width: 200px;
-  background-color: blue;
+  background-color: #0747a6;
+  border-radius: 7px;
   align-items: center;
   border-width: 1px;
   border-color: #000;
   margin-bottom: 15px;
   margin: 0 50px;
-  top: 200px;
+  top: 110px;
 `;
 
 export const RouteText = styled.Text`
