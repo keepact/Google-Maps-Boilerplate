@@ -33,7 +33,7 @@ function GooglePlacesInput({
 
         key: GOOGLE_KEY,
 
-        language: 'br', // language of the results
+        language: 'pt-BR', // language of the results
 
         types: ['address'], // default: 'geocode'
       }}

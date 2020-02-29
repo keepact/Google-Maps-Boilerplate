@@ -83,6 +83,10 @@ function MapComponent() {
       setAddress([newAddress]);
       setCoordinates([newCoords]);
       setRouteStatus({});
+    } else if (coordinates.length === 1) {
+      setAddress([]);
+      setCoordinates([]);
+      setRouteStatus({});
     }
   };
 
