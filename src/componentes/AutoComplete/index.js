@@ -25,7 +25,7 @@ function GooglePlacesInput({
       keyboardAppearance="light" // Can be left out for default keyboardAppearance https://facebook.github.io/react-native/docs/textinput.html#keyboardappearance
       listViewDisplayed={false} // true/false/undefined
       fetchDetails
-      renderDescription={row => row.description} // custom description render
+      renderDescription={row => row.description || row.name} // custom description render
       onPress={onSubmit}
       getDefaultValue={() => ''}
       query={{

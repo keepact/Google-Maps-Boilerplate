@@ -95,8 +95,8 @@ function MapComponent() {
       const granted = await PermissionsAndroid.request(
         PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
         {
-          title: 'Permissão de Localização',
-          message: 'A aplicação precisa da permissão de localização.',
+          title: 'Location Permission',
+          message: 'The application needs the location permission.',
         },
       );
       if (granted === PermissionsAndroid.RESULTS.GRANTED) {
@@ -111,11 +111,13 @@ function MapComponent() {
           },
           error => {
             console.tron.log(error);
-            Alert.alert('Houve um erro ao pegar a latitude e longitude.');
+            Alert.alert(
+              'There was an error in getting latitude and longitude.',
+            );
           },
         );
       } else {
-        Alert.alert('Permissão de localização não concedida');
+        Alert.alert('Location permission not granted');
       }
     } catch (err) {
       console.tron.log(err);
@@ -196,7 +198,7 @@ function MapComponent() {
           <InputContent>
             <GooglePlacesInput
               reference={c => (ref.current.firstInput = c)}
-              placeholder="Digite ínicio da rota"
+              placeholder="Type start of route"
               label="A"
               top={100}
               onPress={() => handleClearInput('start')}
@@ -204,19 +206,21 @@ function MapComponent() {
                 setAddress(
                   address.length === 2
                     ? overiedFirstInput(address, {
-                        address: `${data.terms[0].value.replace(
-                          'Avenida',
-                          'Av.',
-                        )} - ${data.terms[1].value}`,
-                        area: data.terms[2].value,
+                        address: `${data.name ||
+                          data.terms[0].value.replace(
+                            'Avenida',
+                            'Av.',
+                          )} - ${data.vicinity || data.terms[1].value}`,
+                        area: data.rating || data.terms[2].value,
                       })
                     : [
                         {
-                          address: `${data.terms[0].value.replace(
-                            'Avenida',
-                            'Av.',
-                          )} - ${data.terms[1].value}`,
-                          area: data.terms[2].value,
+                          address: `${data.name ||
+                            data.terms[0].value.replace(
+                              'Avenida',
+                              'Av.',
+                            )} - ${data.vicinity || data.terms[1].value}`,
+                          area: data.rating || data.terms[2].value,
                         },
                         ...address,
                       ],
@@ -240,7 +244,7 @@ function MapComponent() {
             <IconLigature />
             <GooglePlacesInput
               reference={c => (ref.current.secondInput = c)}
-              placeholder="Digite o destino"
+              placeholder="Enter destination"
               label="B"
               top={50}
               onPress={() => handleClearInput('end')}
@@ -248,20 +252,22 @@ function MapComponent() {
                 setAddress(
                   address.length === 2
                     ? overiedLastInput(address, {
-                        address: `${data.terms[0].value.replace(
-                          'Avenida',
-                          'Av.',
-                        )} - ${data.terms[1].value}`,
-                        area: data.terms[2].value,
+                        address: `${data.name ||
+                          data.terms[0].value.replace(
+                            'Avenida',
+                            'Av.',
+                          )} - ${data.vicinity || data.terms[1].value}`,
+                        area: data.rating || data.terms[2].value,
                       })
                     : [
                         ...address,
                         {
-                          address: `${data.terms[0].value.replace(
-                            'Avenida',
-                            'Av.',
-                          )} - ${data.terms[1].value}`,
-                          area: data.terms[2].value,
+                          address: `${data.name ||
+                            data.terms[0].value.replace(
+                              'Avenida',
+                              'Av.',
+                            )} - ${data.vicinity || data.terms[1].value}`,
+                          area: data.rating || data.terms[2].value,
                         },
                       ],
                 );
@@ -294,7 +300,7 @@ function MapComponent() {
           )}
 
           <ButtonNavigate onPress={handleGetGoogleMapDirections}>
-            <BoldText>Iniciar</BoldText>
+            <BoldText>Start</BoldText>
           </ButtonNavigate>
         </OverlayData>
       )}
