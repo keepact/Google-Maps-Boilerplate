@@ -30,12 +30,15 @@ function GooglePlacesInput({
       getDefaultValue={() => ''}
       query={{
         // available options: https://developers.google.com/places/web-service/autocomplete
-
         key: GOOGLE_KEY,
+        strictbounds: true, //  Returns only those places that are strictly within the region defined by location and radius
 
-        language: 'pt-BR', // language of the results
+        radius: '115000', // 115 km
+        location: '-22.9035, -43.2096', // Rio de Janeiro
 
         types: ['address'], // default: 'geocode'
+        language: 'pt-BR', // language of the results
+        components: 'country:br', // Brasil
       }}
       currentLocation // Will add a 'Current location' button at the top of the predefined places list
       currentLocationLabel="Current location"
@@ -47,9 +50,7 @@ function GooglePlacesInput({
       }
       GooglePlacesSearchQuery={{
         // available options for GooglePlacesSearch API : https://developers.google.com/places/web-service/search
-
         rankby: 'distance',
-
         type: 'cafe',
       }}
       GooglePlacesDetailsQuery={{
@@ -59,7 +60,6 @@ function GooglePlacesInput({
       }}
       filterReverseGeocodingByTypes={[
         'locality',
-
         'administrative_area_level_3',
       ]} // filter the reverse geocoding results by types - ['locality', 'administrative_area_level_3'] if you want to display only cities
       debounce={200} // debounce the requests in ms. Set to 0 to remove debounce. By default 0ms.
