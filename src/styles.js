@@ -20,16 +20,6 @@ export const InputContent = styled.View`
   width: 280px;
 `;
 
-export const IconLigature = styled(Icon).attrs({
-  name: 'more-vert',
-  color: '#0747A6',
-  size: 18,
-})`
-  position: absolute;
-  left: 4px;
-  top: 36px;
-`;
-
 export const ButtonNavigate = styled.TouchableOpacity`
   width: 60px;
   height: 40px;
@@ -81,6 +71,42 @@ export const OverlayData = styled.View`
 export const DescriptionContainer = styled.View`
   width: 180px;
 `;
+
+export const CloseButton = styled.TouchableOpacity`
+  position: absolute;
+  top: 12px;
+  right: 12px;
+`;
+
+export const Label = styled.Text`
+  color: #fff;
+  right: 17px;
+  top: 10px;
+`;
+
+export const IconLigature = styled(Icon).attrs({
+  name: 'more-vert',
+  color: '#0747A6',
+  size: 18,
+})`
+  position: absolute;
+  left: 4px;
+  top: 36px;
+`;
+
+export const IconLabel = styled(Icon).attrs({
+  name: 'brightness-1',
+  color: '#0747A6',
+  size: 25,
+})`
+  top: 7px;
+`;
+
+export const CloseIcon = styled(Icon).attrs({
+  name: 'close',
+  color: '#000',
+  size: 15,
+})``;
 
 export const mapStyle = StyleSheet.create({
   dimensions: {

@@ -2,10 +2,9 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
-import { Text, TouchableOpacity } from 'react-native';
-import Icon from 'react-native-vector-icons/MaterialIcons';
 
 import { GOOGLE_KEY } from 'react-native-dotenv';
+import { CloseButton, CloseIcon, IconLabel, Label } from '../../styles';
 
 function GooglePlacesInput({
   reference,
@@ -65,21 +64,14 @@ function GooglePlacesInput({
       debounce={200} // debounce the requests in ms. Set to 0 to remove debounce. By default 0ms.
       renderLeftButton={() => (
         <>
-          <Icon
-            name="brightness-1"
-            size={25}
-            color="#0747A6"
-            style={{ top: 7 }}
-          />
-          <Text style={{ color: '#fff', right: 17, top: 10 }}>{label}</Text>
+          <IconLabel />
+          <Label>{label}</Label>
         </>
       )}
       renderRightButton={() => (
-        <TouchableOpacity
-          style={{ top: 12, right: 12, position: 'absolute' }}
-          onPress={onPress}>
-          <Icon name="close" size={15} color="#000" />
-        </TouchableOpacity>
+        <CloseButton onPress={onPress}>
+          <CloseIcon />
+        </CloseButton>
       )}
       styles={{
         container: {
