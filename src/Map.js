@@ -19,6 +19,7 @@ import {
   BoldText,
   RouteText,
   OverlayData,
+  DescriptionContainer,
 } from './styles';
 
 function MapComponent() {
@@ -41,13 +42,47 @@ function MapComponent() {
     mapView: '',
   });
 
-  const handleClearInput = (e, route) => {
-    if (coordinates.length >= 2) setCoordinates([]);
+  const copyArray = data => {
+    const newCopy = [...data];
 
+    return newCopy;
+  };
+
+  const overiedFirstInput = (data, item) => {
+    const clone = copyArray(data);
+    const newArray = clone.pop();
+
+    const AddToFront = [item].concat(newArray);
+    return AddToFront;
+  };
+
+  const overiedLastInput = (data, item) => {
+    const clone = copyArray(data);
+    clone.pop();
+
+    const AddToLast = clone.concat(item);
+    return AddToLast;
+  };
+
+  const handleClearInput = route => {
     if (route === 'start') {
       ref.current.firstInput.setAddressText('');
     } else {
       ref.current.secondInput.setAddressText('');
+    }
+
+    if (coordinates.length >= 2) {
+      const cloneAddress = copyArray(address);
+      const cloneCoords = copyArray(coordinates);
+
+      const newAddress =
+        route === 'start' ? cloneAddress.pop() : cloneAddress.shift();
+      const newCoords =
+        route === 'start' ? cloneCoords.pop() : cloneCoords.shift();
+
+      setAddress([newAddress]);
+      setCoordinates([newCoords]);
+      setRouteStatus({});
     }
   };
 
@@ -120,10 +155,10 @@ function MapComponent() {
             coordinates.map((coordinate, index) => (
               <Marker key={`coordinate_${index}`} coordinate={coordinate}>
                 <Callout>
-                  <View style={{ width: 180 }}>
+                  <DescriptionContainer>
                     <BoldText>{address[index].area}</BoldText>
                     <Text>{address[index].address}</Text>
-                  </View>
+                  </DescriptionContainer>
                 </Callout>
               </Marker>
             ))}
@@ -160,25 +195,42 @@ function MapComponent() {
               placeholder="Digite ínicio da rota"
               label="A"
               top={100}
-              onPress={e => handleClearInput(e, 'start')}
+              onPress={() => handleClearInput('start')}
               onSubmit={(data, details = null) => {
-                setAddress([
-                  ...address,
-                  {
-                    address: `${data.terms[0].value.replace(
-                      'Avenida',
-                      'Av.',
-                    )} - ${data.terms[1].value}`,
-                    area: data.terms[2].value,
-                  },
-                ]);
-                setCoordinates([
-                  ...coordinates,
-                  {
-                    latitude: details.geometry.location.lat,
-                    longitude: details.geometry.location.lng,
-                  },
-                ]);
+                setAddress(
+                  address.length === 2
+                    ? overiedFirstInput(address, {
+                        address: `${data.terms[0].value.replace(
+                          'Avenida',
+                          'Av.',
+                        )} - ${data.terms[1].value}`,
+                        area: data.terms[2].value,
+                      })
+                    : [
+                        {
+                          address: `${data.terms[0].value.replace(
+                            'Avenida',
+                            'Av.',
+                          )} - ${data.terms[1].value}`,
+                          area: data.terms[2].value,
+                        },
+                        ...address,
+                      ],
+                );
+                setCoordinates(
+                  coordinates.length === 2
+                    ? overiedFirstInput(coordinates, {
+                        latitude: details.geometry.location.lat,
+                        longitude: details.geometry.location.lng,
+                      })
+                    : [
+                        {
+                          latitude: details.geometry.location.lat,
+                          longitude: details.geometry.location.lng,
+                        },
+                        ...coordinates,
+                      ],
+                );
               }}
             />
             <IconLigature />
@@ -187,25 +239,42 @@ function MapComponent() {
               placeholder="Digite o destino"
               label="B"
               top={50}
-              onPress={e => handleClearInput(e, 'end')}
+              onPress={() => handleClearInput('end')}
               onSubmit={(data, details = null) => {
-                setAddress([
-                  ...address,
-                  {
-                    address: `${data.terms[0].value.replace(
-                      'Avenida',
-                      'Av.',
-                    )} - ${data.terms[1].value}`,
-                    area: data.terms[2].value,
-                  },
-                ]);
-                setCoordinates([
-                  ...coordinates,
-                  {
-                    latitude: details.geometry.location.lat,
-                    longitude: details.geometry.location.lng,
-                  },
-                ]);
+                setAddress(
+                  address.length === 2
+                    ? overiedLastInput(address, {
+                        address: `${data.terms[0].value.replace(
+                          'Avenida',
+                          'Av.',
+                        )} - ${data.terms[1].value}`,
+                        area: data.terms[2].value,
+                      })
+                    : [
+                        ...address,
+                        {
+                          address: `${data.terms[0].value.replace(
+                            'Avenida',
+                            'Av.',
+                          )} - ${data.terms[1].value}`,
+                          area: data.terms[2].value,
+                        },
+                      ],
+                );
+                setCoordinates(
+                  coordinates.length === 2
+                    ? overiedLastInput(coordinates, {
+                        latitude: details.geometry.location.lat,
+                        longitude: details.geometry.location.lng,
+                      })
+                    : [
+                        ...coordinates,
+                        {
+                          latitude: details.geometry.location.lat,
+                          longitude: details.geometry.location.lng,
+                        },
+                      ],
+                );
               }}
             />
           </InputContent>
