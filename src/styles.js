@@ -78,6 +78,10 @@ export const OverlayData = styled.View`
   width: 100%;
 `;
 
+export const DescriptionContainer = styled.View`
+  width: 180px;
+`;
+
 export const mapStyle = StyleSheet.create({
   dimensions: {
     width: Dimensions.get('window').width,
