@@ -49,6 +49,10 @@ function MapComponent() {
   };
 
   const overiedFirstInput = (data, item) => {
+    if (data.length === 1) {
+      return [item];
+    }
+
     const clone = copyArray(data);
     const newArray = clone.pop();
 
@@ -57,6 +61,10 @@ function MapComponent() {
   };
 
   const overiedLastInput = (data, item) => {
+    if (data.length === 1) {
+      return [item];
+    }
+
     const clone = copyArray(data);
     clone.pop();
 
@@ -67,8 +75,10 @@ function MapComponent() {
   const handleClearInput = route => {
     if (route === 'start') {
       ref.current.firstInput.setAddressText('');
+      ref.current.firstInput.value = '';
     } else {
       ref.current.secondInput.setAddressText('');
+      ref.current.secondInput.value = '';
     }
 
     if (coordinates.length >= 2) {
@@ -203,8 +213,11 @@ function MapComponent() {
               top={100}
               onPress={() => handleClearInput('start')}
               onSubmit={(data, details = null) => {
+                ref.current.firstInput.value = 'value';
+
                 setAddress(
-                  address.length === 2
+                  address.length === 2 ||
+                    (address.length === 1 && !ref.current.secondInput.value)
                     ? overiedFirstInput(address, {
                         address: `${data.name ||
                           data.terms[0].value.replace(
@@ -226,7 +239,8 @@ function MapComponent() {
                       ],
                 );
                 setCoordinates(
-                  coordinates.length === 2
+                  coordinates.length === 2 ||
+                    (coordinates.length === 1 && !ref.current.secondInput.value)
                     ? overiedFirstInput(coordinates, {
                         latitude: details.geometry.location.lat,
                         longitude: details.geometry.location.lng,
@@ -249,8 +263,10 @@ function MapComponent() {
               top={50}
               onPress={() => handleClearInput('end')}
               onSubmit={(data, details = null) => {
+                ref.current.secondInput.value = 'value';
+
                 setAddress(
-                  address.length === 2
+                  address.length === 2 || !ref.current.firstInput.value
                     ? overiedLastInput(address, {
                         address: `${data.name ||
                           data.terms[0].value.replace(
@@ -272,7 +288,7 @@ function MapComponent() {
                       ],
                 );
                 setCoordinates(
-                  coordinates.length === 2
+                  coordinates.length === 2 || !ref.current.firstInput.value
                     ? overiedLastInput(coordinates, {
                         latitude: details.geometry.location.lat,
                         longitude: details.geometry.location.lng,
