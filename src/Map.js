@@ -210,7 +210,9 @@ function MapComponent() {
                 );
               }}
             />
+
             <IconLigature />
+
             <GooglePlacesInput
               reference={c => (ref.current.secondInput = c)}
               placeholder="Enter destination"
