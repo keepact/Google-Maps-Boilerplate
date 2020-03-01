@@ -9,6 +9,14 @@ import GooglePlacesInput from './componentes/AutoComplete';
 import MapDirections from './componentes/DirectionsService';
 
 import {
+  copyArray,
+  getAddressData,
+  getCoordinatesData,
+  overiedFirstInput,
+  overiedLastInput,
+} from './util/format';
+
+import {
   mapStyle,
   Container,
   InputsContainer,
@@ -41,36 +49,6 @@ function MapComponent() {
     secondInput: '',
     mapView: '',
   });
-
-  const copyArray = data => {
-    const newCopy = [...data];
-
-    return newCopy;
-  };
-
-  const overiedFirstInput = (data, item) => {
-    if (data.length === 1) {
-      return [item];
-    }
-
-    const clone = copyArray(data);
-    const newArray = clone.pop();
-
-    const AddToFront = [item].concat(newArray);
-    return AddToFront;
-  };
-
-  const overiedLastInput = (data, item) => {
-    if (data.length === 1) {
-      return [item];
-    }
-
-    const clone = copyArray(data);
-    clone.pop();
-
-    const AddToLast = clone.concat(item);
-    return AddToLast;
-  };
 
   const handleClearInput = route => {
     if (route === 'start') {
@@ -218,40 +196,17 @@ function MapComponent() {
                 setAddress(
                   address.length === 2 ||
                     (address.length === 1 && !ref.current.secondInput.value)
-                    ? overiedFirstInput(address, {
-                        address: `${data.name ||
-                          data.terms[0].value.replace(
-                            'Avenida',
-                            'Av.',
-                          )} - ${data.vicinity || data.terms[1].value}`,
-                        area: data.rating || data.terms[2].value,
-                      })
-                    : [
-                        {
-                          address: `${data.name ||
-                            data.terms[0].value.replace(
-                              'Avenida',
-                              'Av.',
-                            )} - ${data.vicinity || data.terms[1].value}`,
-                          area: data.rating || data.terms[2].value,
-                        },
-                        ...address,
-                      ],
+                    ? overiedFirstInput(address, getAddressData(data))
+                    : [getAddressData(data), ...address],
                 );
                 setCoordinates(
                   coordinates.length === 2 ||
                     (coordinates.length === 1 && !ref.current.secondInput.value)
-                    ? overiedFirstInput(coordinates, {
-                        latitude: details.geometry.location.lat,
-                        longitude: details.geometry.location.lng,
-                      })
-                    : [
-                        {
-                          latitude: details.geometry.location.lat,
-                          longitude: details.geometry.location.lng,
-                        },
-                        ...coordinates,
-                      ],
+                    ? overiedFirstInput(
+                        coordinates,
+                        getCoordinatesData(details),
+                      )
+                    : [getCoordinatesData(details), ...coordinates],
                 );
               }}
             />
@@ -267,39 +222,13 @@ function MapComponent() {
 
                 setAddress(
                   address.length === 2 || !ref.current.firstInput.value
-                    ? overiedLastInput(address, {
-                        address: `${data.name ||
-                          data.terms[0].value.replace(
-                            'Avenida',
-                            'Av.',
-                          )} - ${data.vicinity || data.terms[1].value}`,
-                        area: data.rating || data.terms[2].value,
-                      })
-                    : [
-                        ...address,
-                        {
-                          address: `${data.name ||
-                            data.terms[0].value.replace(
-                              'Avenida',
-                              'Av.',
-                            )} - ${data.vicinity || data.terms[1].value}`,
-                          area: data.rating || data.terms[2].value,
-                        },
-                      ],
+                    ? overiedLastInput(address, getAddressData(data))
+                    : [...address, getAddressData(data)],
                 );
                 setCoordinates(
                   coordinates.length === 2 || !ref.current.firstInput.value
-                    ? overiedLastInput(coordinates, {
-                        latitude: details.geometry.location.lat,
-                        longitude: details.geometry.location.lng,
-                      })
-                    : [
-                        ...coordinates,
-                        {
-                          latitude: details.geometry.location.lat,
-                          longitude: details.geometry.location.lng,
-                        },
-                      ],
+                    ? overiedLastInput(coordinates, getCoordinatesData(details))
+                    : [...coordinates, getCoordinatesData(details)],
                 );
               }}
             />
