@@ -5,6 +5,7 @@ import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplet
 
 import { GOOGLE_KEY } from 'react-native-dotenv';
 import { CloseButton, CloseIcon, IconLabel, Label } from '../../styles';
+import { getDescriptionData } from '../../util/format';
 
 function GooglePlacesInput({
   reference,
@@ -24,7 +25,7 @@ function GooglePlacesInput({
       keyboardAppearance="light" // Can be left out for default keyboardAppearance https://facebook.github.io/react-native/docs/textinput.html#keyboardappearance
       listViewDisplayed={false} // true/false/undefined
       fetchDetails
-      renderDescription={row => row.description || row.name} // custom description render
+      renderDescription={row => getDescriptionData(row)} // custom description render
       onPress={onSubmit}
       getDefaultValue={() => ''}
       query={{
