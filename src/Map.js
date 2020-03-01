@@ -10,6 +10,7 @@ import MapDirections from './componentes/DirectionsService';
 
 import {
   copyArray,
+  arrayFormatter,
   getAddressData,
   getCoordinatesData,
   overiedFirstInput,
@@ -63,10 +64,8 @@ function MapComponent() {
       const cloneAddress = copyArray(address);
       const cloneCoords = copyArray(coordinates);
 
-      const newAddress =
-        route === 'start' ? cloneAddress.pop() : cloneAddress.shift();
-      const newCoords =
-        route === 'start' ? cloneCoords.pop() : cloneCoords.shift();
+      const newAddress = arrayFormatter(cloneAddress, route);
+      const newCoords = arrayFormatter(cloneCoords, route);
 
       setAddress([newAddress]);
       setCoordinates([newCoords]);
