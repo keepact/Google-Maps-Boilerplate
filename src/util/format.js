@@ -17,6 +17,9 @@ export const getCoordinatesData = details => ({
   longitude: details.geometry.location.lng,
 });
 
+export const arrayFormatter = (data, route) =>
+  route === 'start' ? data.pop() : data.shift();
+
 export const copyArray = data => {
   const newCopy = [...data];
 
