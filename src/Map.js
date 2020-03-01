@@ -241,7 +241,11 @@ function MapComponent() {
         <OverlayData>
           {!isNaN(routeStatus.distance) && !isNaN(routeStatus.duration) && (
             <RouteData>
-              <RouteText>{Math.trunc(routeStatus.distance)} km</RouteText>
+              <RouteText>
+                {routeStatus.distance > 1
+                  ? `${Math.trunc(routeStatus.distance)} km`
+                  : `${routeStatus.distance * 1000} m`}
+              </RouteText>
               <RouteText>{Math.trunc(routeStatus.duration)} min</RouteText>
             </RouteData>
           )}
