@@ -14,6 +14,8 @@ function GooglePlacesInput({
   onSubmit,
   label,
   top,
+  selection,
+  onSelectionChange,
 }) {
   return (
     <GooglePlacesAutocomplete
@@ -28,6 +30,10 @@ function GooglePlacesInput({
       renderDescription={row => getDescriptionData(row)} // custom description render
       onPress={onSubmit}
       getDefaultValue={() => ''}
+      textInputProps={{
+        selection,
+        onSelectionChange,
+      }}
       query={{
         // available options: https://developers.google.com/places/web-service/autocomplete
         key: GOOGLE_KEY,
@@ -121,6 +127,8 @@ GooglePlacesInput.propTypes = {
       current: PropTypes.object,
     }),
   ]).isRequired,
+  selection: PropTypes.oneOfType([PropTypes.object]).isRequired,
+  onSelectionChange: PropTypes.func.isRequired,
   top: PropTypes.number.isRequired,
   onPress: PropTypes.func.isRequired,
   onSubmit: PropTypes.func.isRequired,

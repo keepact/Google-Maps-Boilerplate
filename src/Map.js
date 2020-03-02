@@ -45,6 +45,11 @@ function MapComponent() {
     longitudeDelta: 0.0421,
   });
 
+  const [selection, setSelection] = useState({
+    start: 0,
+    end: 0,
+  });
+
   const ref = useRef({
     firstInput: '',
     secondInput: '',
@@ -130,6 +135,14 @@ function MapComponent() {
     getDirections(data);
   };
 
+  const handleSelectionChange = data => {
+    console.tron.log(data, 'data');
+    setSelection({
+      start: data.start,
+      end: data.end,
+    });
+  };
+
   return (
     <View>
       <Container>
@@ -188,6 +201,10 @@ function MapComponent() {
               placeholder="Type start of route"
               label="A"
               top={100}
+              selection={selection}
+              onSelectionChange={e =>
+                handleSelectionChange(e.nativeEvent.selection)
+              }
               onPress={() => handleClearInput('start')}
               onSubmit={(data, details = null) => {
                 ref.current.firstInput.value = 'value';
@@ -217,6 +234,10 @@ function MapComponent() {
               placeholder="Enter destination"
               label="B"
               top={50}
+              onSelectionChange={e =>
+                handleSelectionChange(e.nativeEvent.selection)
+              }
+              selection={selection}
               onPress={() => handleClearInput('end')}
               onSubmit={(data, details = null) => {
                 ref.current.secondInput.value = 'value';
