@@ -35,6 +35,7 @@ function MapComponent() {
   const [address, setAddress] = useState([]);
   const [coordinates, setCoordinates] = useState([]);
   const [routeStatus, setRouteStatus] = useState({});
+  const [selection, setSelection] = useState({});
 
   const { width, height } = mapStyle.dimensions;
 
@@ -133,61 +134,72 @@ function MapComponent() {
   return (
     <View>
       <Container>
-        <MapView
-          ref={c => (ref.current.mapView = c)}
-          provider={PROVIDER_GOOGLE}
-          style={mapStyle.dimensions}
-          showsUserLocation
-          initialRegion={{
-            latitude: position.latitude,
-            longitude: position.longitude,
-            latitudeDelta: 0.015,
-            longitudeDelta: 0.0121,
-          }}>
-          {coordinates.length >= 2 &&
-            coordinates.map((coordinate, index) => (
-              <Marker key={`coordinate_${index}`} coordinate={coordinate}>
-                <Callout>
-                  <DescriptionContainer>
-                    <BoldText>{address[index].area}</BoldText>
-                    <Text>{address[index].address}</Text>
-                  </DescriptionContainer>
-                </Callout>
-              </Marker>
-            ))}
+        {position.latitude && position.longitude && (
+          <MapView
+            ref={c => (ref.current.mapView = c)}
+            provider={PROVIDER_GOOGLE}
+            style={mapStyle.dimensions}
+            showsUserLocation
+            initialRegion={{
+              latitude: position.latitude,
+              longitude: position.longitude,
+              latitudeDelta: 0.015,
+              longitudeDelta: 0.0121,
+            }}>
+            {coordinates.length >= 2 &&
+              coordinates.map((coordinate, index) => (
+                <Marker key={`coordinate_${index}`} coordinate={coordinate}>
+                  <Callout>
+                    <DescriptionContainer>
+                      <BoldText>{address[index].area}</BoldText>
+                      <Text>{address[index].address}</Text>
+                    </DescriptionContainer>
+                  </Callout>
+                </Marker>
+              ))}
 
-          {coordinates.length >= 2 && (
-            <MapDirections
-              waypoints={
-                coordinates.length > 2 ? coordinates.slice(1, -1) : null
-              }
-              origin={coordinates[0]}
-              destination={coordinates[coordinates.length - 1]}
-              onReady={result => {
-                setRouteStatus({
-                  distance: result.distance,
-                  duration: result.duration,
-                });
+            {coordinates.length >= 2 && (
+              <MapDirections
+                waypoints={
+                  coordinates.length > 2 ? coordinates.slice(1, -1) : null
+                }
+                origin={coordinates[0]}
+                destination={coordinates[coordinates.length - 1]}
+                onReady={result => {
+                  setRouteStatus({
+                    distance: result.distance,
+                    duration: result.duration,
+                  });
 
-                ref.current.mapView.fitToCoordinates(result.coordinates, {
-                  edgePadding: {
-                    right: width / 20,
-                    bottom: height / 20,
-                    left: width / 20,
-                    top: height / 20,
-                  },
-                });
-              }}
-            />
-          )}
-        </MapView>
+                  ref.current.mapView.fitToCoordinates(result.coordinates, {
+                    edgePadding: {
+                      right: width / 20,
+                      bottom: height / 20,
+                      left: width / 20,
+                      top: height / 20,
+                    },
+                  });
+                }}
+              />
+            )}
+          </MapView>
+        )}
         <InputsContainer>
           <InputContent>
             <GooglePlacesInput
               reference={c => (ref.current.firstInput = c)}
+              location={position}
+              selection={selection}
               placeholder="Type start of route"
               label="A"
               top={100}
+              onFocus={() => setSelection({})}
+              onBlur={() =>
+                setSelection({
+                  start: 0,
+                  end: 0,
+                })
+              }
               onPress={() => handleClearInput('start')}
               onSubmit={(data, details = null) => {
                 ref.current.firstInput.value = 'value';
@@ -214,9 +226,18 @@ function MapComponent() {
 
             <GooglePlacesInput
               reference={c => (ref.current.secondInput = c)}
+              selection={selection}
+              location={position}
               placeholder="Enter destination"
               label="B"
               top={50}
+              onFocus={() => setSelection({})}
+              onBlur={() =>
+                setSelection({
+                  start: 0,
+                  end: 0,
+                })
+              }
               onPress={() => handleClearInput('end')}
               onSubmit={(data, details = null) => {
                 ref.current.secondInput.value = 'value';
