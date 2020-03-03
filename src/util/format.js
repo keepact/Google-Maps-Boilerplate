@@ -1,14 +1,13 @@
-const formatAddress = row =>
-  `${row.name ||
-    row.terms[0].value
-      .replace('Avenida', 'Av.')
-      .replace(',', '')} - ${row.vicinity || row.terms[1].value}`;
-
 export const getDescriptionData = row =>
-  row.name || row.terms ? formatAddress(row) : row.description;
+  row.name
+    ? `${row.name} - ${row.vicnity}`
+    : row.description.replace('Avenida', 'Av.');
 
 export const getAddressData = data => ({
-  address: formatAddress(data),
+  address: `${data.name ||
+    data.terms[0].value
+      .replace('Avenida', 'Av.')
+      .replace(',', '')} - ${data.vicinity || data.terms[1].value}`,
   area: data.rating || data.terms[2].value,
 });
 

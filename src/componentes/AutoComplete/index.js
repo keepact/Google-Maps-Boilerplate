@@ -2,20 +2,22 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
-
+import { YellowBox } from 'react-native';
 import { GOOGLE_KEY } from 'react-native-dotenv';
 import { CloseButton, CloseIcon, IconLabel, Label } from '../../styles';
 import { getDescriptionData } from '../../util/format';
 
 function GooglePlacesInput({
   reference,
+  location,
   placeholder,
   onPress,
   onSubmit,
   label,
   top,
   selection,
-  onSelectionChange,
+  onBlur,
+  onFocus,
 }) {
   return (
     <GooglePlacesAutocomplete
@@ -32,19 +34,20 @@ function GooglePlacesInput({
       getDefaultValue={() => ''}
       textInputProps={{
         selection,
-        onSelectionChange,
+        onBlur,
+        onFocus,
       }}
       query={{
         // available options: https://developers.google.com/places/web-service/autocomplete
-        key: GOOGLE_KEY,
+        key: GOOGLE_KEY, // API KEY
         strictbounds: true, //  Returns only those places that are strictly within the region defined by location and radius
 
-        radius: '115000', // 115 km
-        location: '-22.9035, -43.2096', // Rio de Janeiro
+        radius: '20000', // 200 km
+        location: `${location.latitude}, ${location.longitude}`, // current device Location
 
         types: ['address'], // default: 'geocode'
         language: 'pt-BR', // language of the results
-        components: 'country:br', // Brasil
+        components: 'country:br', // country
       }}
       currentLocation // Will add a 'Current location' button at the top of the predefined places list
       currentLocationLabel="Current location"
@@ -120,6 +123,10 @@ function GooglePlacesInput({
   );
 }
 
+YellowBox.ignoreWarnings([
+  'Warning: Failed prop type: The prop `selection.start` is marked as required in `TextInput`, but its value is `undefined`',
+]);
+
 GooglePlacesInput.propTypes = {
   reference: PropTypes.oneOfType([
     PropTypes.func,
@@ -127,13 +134,15 @@ GooglePlacesInput.propTypes = {
       current: PropTypes.object,
     }),
   ]).isRequired,
+  location: PropTypes.oneOfType([PropTypes.object]).isRequired,
   selection: PropTypes.oneOfType([PropTypes.object]).isRequired,
-  onSelectionChange: PropTypes.func.isRequired,
-  top: PropTypes.number.isRequired,
+  onBlur: PropTypes.func.isRequired,
+  onFocus: PropTypes.func.isRequired,
   onPress: PropTypes.func.isRequired,
   onSubmit: PropTypes.func.isRequired,
-  label: PropTypes.string.isRequired,
   placeholder: PropTypes.string.isRequired,
+  top: PropTypes.number.isRequired,
+  label: PropTypes.string.isRequired,
 };
 
 export default GooglePlacesInput;
