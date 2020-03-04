@@ -4,8 +4,9 @@ import PropTypes from 'prop-types';
 import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
 import { YellowBox } from 'react-native';
 import { GOOGLE_KEY } from 'react-native-dotenv';
-import { CloseButton, CloseIcon, IconLabel, Label } from '../../styles';
 import { getDescriptionData } from '../../util/format';
+
+import { CloseButton, CloseIcon, IconLabel, Label } from '../../styles';
 
 function GooglePlacesInput({
   reference,
@@ -42,8 +43,8 @@ function GooglePlacesInput({
         key: GOOGLE_KEY, // API KEY
         strictbounds: true, //  Returns only those places that are strictly within the region defined by location and radius
 
-        radius: '20000', // 200 km
-        location: `${location.latitude}, ${location.longitude}`, // current device Location
+        radius: '200000', // 200 km
+        location: location && `${location.latitude}, ${location.longitude}`, // current device Location
 
         types: ['address'], // default: 'geocode'
         language: 'pt-BR', // language of the results

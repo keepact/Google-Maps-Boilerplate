@@ -1,9 +1,8 @@
 import React, { useState, useRef, useEffect } from 'react';
 
-import { View, Text, PermissionsAndroid, Alert } from 'react-native';
+import { View, Text, PermissionsAndroid, Alert, Platform } from 'react-native';
 import MapView, { PROVIDER_GOOGLE, Marker, Callout } from 'react-native-maps';
 
-import Geolocation from 'react-native-geolocation-service';
 import getDirections from 'react-native-google-maps-directions';
 import GooglePlacesInput from './componentes/AutoComplete';
 import MapDirections from './componentes/DirectionsService';
@@ -34,17 +33,11 @@ import {
 function MapComponent() {
   const [address, setAddress] = useState([]);
   const [coordinates, setCoordinates] = useState([]);
+  const [currentPosition, setCurrentPosition] = useState({});
   const [routeStatus, setRouteStatus] = useState({});
   const [selection, setSelection] = useState({});
 
   const { width, height } = mapStyle.dimensions;
-
-  const [position, setPosition] = useState({
-    latitude: -22.9707112,
-    longitude: -43.18644330000001,
-    latitudeDelta: 0.0922,
-    longitudeDelta: 0.0421,
-  });
 
   const ref = useRef({
     firstInput: '',
@@ -88,9 +81,9 @@ function MapComponent() {
         },
       );
       if (granted === PermissionsAndroid.RESULTS.GRANTED) {
-        Geolocation.getCurrentPosition(
+        navigator.geolocation.getCurrentPosition(
           pos => {
-            setPosition({
+            setCurrentPosition({
               latitude: pos.coords.latitude,
               longitude: pos.coords.longitude,
               latitudeDelta: 0.0922,
@@ -102,6 +95,11 @@ function MapComponent() {
             Alert.alert(
               'There was an error in getting latitude and longitude.',
             );
+          },
+          {
+            enableHighAccuracy: true,
+            timeout: 20000,
+            maximumAge: 1000,
           },
         );
       } else {
@@ -134,15 +132,15 @@ function MapComponent() {
   return (
     <View>
       <Container>
-        {position.latitude && position.longitude && (
+        {currentPosition.latitude && currentPosition.longitude && (
           <MapView
             ref={c => (ref.current.mapView = c)}
             provider={PROVIDER_GOOGLE}
             style={mapStyle.dimensions}
             showsUserLocation
             initialRegion={{
-              latitude: position.latitude,
-              longitude: position.longitude,
+              latitude: currentPosition.latitude,
+              longitude: currentPosition.longitude,
               latitudeDelta: 0.015,
               longitudeDelta: 0.0121,
             }}>
@@ -188,8 +186,8 @@ function MapComponent() {
           <InputContent>
             <GooglePlacesInput
               reference={c => (ref.current.firstInput = c)}
-              location={position}
-              selection={selection}
+              location={currentPosition}
+              selection={Platform.OS === 'android' ? selection : undefined}
               placeholder="Type start of route"
               label="A"
               top={100}
@@ -226,8 +224,8 @@ function MapComponent() {
 
             <GooglePlacesInput
               reference={c => (ref.current.secondInput = c)}
-              selection={selection}
-              location={position}
+              selection={Platform.OS === 'android' ? selection : undefined}
+              location={currentPosition}
               placeholder="Enter destination"
               label="B"
               top={50}

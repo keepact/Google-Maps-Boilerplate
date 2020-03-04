@@ -37,6 +37,7 @@ module.exports = {
     'no-underscore-dangle': 'off',
     'camelcase': 'off',
     'no-return-assign': 'off',
+    'no-undef': 'off',
     'react-hooks/rules-of-hooks': 'error',
     'react-hooks/exhaustive-deps': 'warn'
   },
