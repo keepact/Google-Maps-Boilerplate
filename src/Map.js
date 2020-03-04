@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 
-import { View, Text, PermissionsAndroid, Alert, Platform } from 'react-native';
+import { View, Text, Alert, Platform } from 'react-native';
+import { request, PERMISSIONS, RESULTS } from 'react-native-permissions';
 import MapView, { PROVIDER_GOOGLE, Marker, Callout } from 'react-native-maps';
 
 import getDirections from 'react-native-google-maps-directions';
@@ -72,42 +73,41 @@ function MapComponent() {
   };
 
   const requestLocationPermission = async () => {
-    try {
-      const granted = await PermissionsAndroid.request(
-        PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
-        {
-          title: 'Location Permission',
-          message: 'The application needs the location permission.',
-        },
-      );
-      if (granted === PermissionsAndroid.RESULTS.GRANTED) {
-        navigator.geolocation.getCurrentPosition(
-          pos => {
-            setCurrentPosition({
-              latitude: pos.coords.latitude,
-              longitude: pos.coords.longitude,
-              latitudeDelta: 0.0922,
-              longitudeDelta: 0.0421,
-            });
-          },
-          error => {
-            console.tron.log(error);
-            Alert.alert(
-              'There was an error in getting latitude and longitude.',
-            );
-          },
-          {
-            enableHighAccuracy: true,
-            timeout: 20000,
-            maximumAge: 1000,
-          },
-        );
-      } else {
+    await request(
+      Platform.select({
+        android: PERMISSIONS.ANDROID.ACCESS_FINE_LOCATION,
+        ios: PERMISSIONS.IOS.LOCATION_WHEN_IN_USE,
+      }),
+    )
+      .then(result => {
+        if (result === RESULTS.GRANTED) {
+          navigator.geolocation.getCurrentPosition(
+            pos => {
+              setCurrentPosition({
+                latitude: pos.coords.latitude,
+                longitude: pos.coords.longitude,
+                latitudeDelta: 0.0922,
+                longitudeDelta: 0.0421,
+              });
+            },
+            error => {
+              console.tron.log(error);
+              Alert.alert(
+                'There was an error in getting latitude and longitude.',
+              );
+            },
+            {
+              enableHighAccuracy: true,
+              timeout: 20000,
+              maximumAge: 1000,
+            },
+          );
+        }
+      })
+      .catch(error => {
+        console.tron.log(error);
         Alert.alert('Location permission not granted');
-      }
-    } catch (err) {
-      console.tron.log(err);
-    }
+      });
   };
 
   useEffect(() => {
