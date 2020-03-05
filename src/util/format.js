@@ -1,6 +1,6 @@
 export const getDescriptionData = row =>
   row.name
-    ? `${row.name} - ${row.vicnity}`
+    ? `${row.name} - ${row.vicinity}`
     : row.description.replace('Avenida', 'Av.');
 
 export const getAddressData = data => ({
