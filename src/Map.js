@@ -58,6 +58,8 @@ function MapComponent() {
         setCurrentPosition({
           latitude,
           longitude,
+          latitudeDelta: 0.015,
+          longitudeDelta: 0.0121,
         });
       }
     } catch (err) {
@@ -120,12 +122,7 @@ function MapComponent() {
             provider={PROVIDER_GOOGLE}
             style={mapStyle.dimensions}
             showsUserLocation
-            initialRegion={{
-              latitude: currentPosition.latitude,
-              longitude: currentPosition.longitude,
-              latitudeDelta: 0.015,
-              longitudeDelta: 0.0121,
-            }}>
+            initialRegion={currentPosition}>
             {coordinates.length >= 2 &&
               coordinates.map((coordinate, index) => (
                 <Marker key={`coordinate_${index}`} coordinate={coordinate}>
