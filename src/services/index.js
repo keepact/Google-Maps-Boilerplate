@@ -1,5 +1,8 @@
 import { request, PERMISSIONS, RESULTS } from 'react-native-permissions';
-import { Platform } from 'react-native';
+import { Platform, NativeModules } from 'react-native';
+
+import { filterObject } from '../util/format';
+import language from '../langs';
 
 export const getUserLocation = () =>
   new Promise((resolve, reject) => {
@@ -13,6 +16,21 @@ export const getUserLocation = () =>
       },
     );
   });
+
+export const getLanguage = () => {
+  const deviceLocale =
+    Platform.OS === 'ios'
+      ? NativeModules.SettingsManager.settings.AppleLocale
+      : NativeModules.I18nManager.localeIdentifier;
+
+  const hasLang = language.langs.includes(deviceLocale);
+
+  if (hasLang) {
+    const lang = filterObject(language, deviceLocale);
+    return lang[deviceLocale];
+  }
+  return language.en_US;
+};
 
 export const requestLocationPermission = async () => {
   try {
