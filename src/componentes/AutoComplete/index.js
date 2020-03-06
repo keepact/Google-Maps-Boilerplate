@@ -37,6 +37,7 @@ function GooglePlacesInput({
         selection,
         onBlur,
         onFocus,
+        clearButtonMode: 'never', // removing native clear button in ios
       }}
       query={{
         // available options: https://developers.google.com/places/web-service/autocomplete
