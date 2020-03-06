@@ -1,18 +1,20 @@
 import React, { useState, useRef, useEffect } from 'react';
 
-import { View, Text, Platform, Alert, NativeModules } from 'react-native';
+import { View, Text, Platform, Alert } from 'react-native';
 import MapView, { PROVIDER_GOOGLE, Marker, Callout } from 'react-native-maps';
 
 import getDirections from 'react-native-google-maps-directions';
 import GooglePlacesInput from './componentes/AutoComplete';
 import MapDirections from './componentes/DirectionsService';
 
-import language from './langs';
-import { getUserLocation, requestLocationPermission } from './services';
+import {
+  getUserLocation,
+  getLanguage,
+  requestLocationPermission,
+} from './services';
 
 import {
   copyArray,
-  filterObject,
   arrayFormatter,
   getAddressData,
   getCoordinatesData,
@@ -71,25 +73,9 @@ function MapComponent() {
     }
   };
 
-  const getLanguage = () => {
-    const deviceLocale =
-      Platform.OS === 'ios'
-        ? NativeModules.SettingsManager.settings.AppleLocale
-        : NativeModules.I18nManager.localeIdentifier;
-
-    const hasLang = language.langs.includes(deviceLocale);
-
-    if (hasLang) {
-      const lang = filterObject(language, deviceLocale);
-      setLocale(lang[deviceLocale]);
-    } else {
-      setLocale(language.en_US);
-    }
-  };
-
   useEffect(() => {
     getPosition();
-    getLanguage();
+    setLocale(getLanguage());
   }, []);
 
   const handleClearInput = route => {
