@@ -19,6 +19,10 @@ export const getCoordinatesData = details => ({
 export const arrayFormatter = (data, route) =>
   route === 'start' ? data.pop() : data.shift();
 
+export const filterObject = (object, ...keys) => {
+  return keys.reduce((result, key) => ({ ...result, [key]: object[key] }), {});
+};
+
 export const copyArray = data => {
   const newCopy = [...data];
 
