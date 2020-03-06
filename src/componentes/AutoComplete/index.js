@@ -96,6 +96,7 @@ function GooglePlacesInput({
           shadowOpacity: 0,
         },
         textInput: {
+          color: '#000',
           backgroundColor: '#eee',
           paddingRight: 20,
         },
