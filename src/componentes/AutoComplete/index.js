@@ -130,6 +130,10 @@ YellowBox.ignoreWarnings([
   'Warning: Failed prop type: The prop `selection.start` is marked as required in `TextInput`, but its value is `undefined`',
 ]);
 
+GooglePlacesInput.defaultProps = {
+  placeholder: '',
+};
+
 GooglePlacesInput.propTypes = {
   reference: PropTypes.oneOfType([
     PropTypes.func,
@@ -143,7 +147,7 @@ GooglePlacesInput.propTypes = {
   onFocus: PropTypes.func.isRequired,
   onPress: PropTypes.func.isRequired,
   onSubmit: PropTypes.func.isRequired,
-  placeholder: PropTypes.string.isRequired,
+  placeholder: PropTypes.string,
   top: PropTypes.number.isRequired,
   label: PropTypes.string.isRequired,
 };

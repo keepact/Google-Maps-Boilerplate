@@ -1,16 +1,18 @@
 import React, { useState, useRef, useEffect } from 'react';
 
-import { View, Text, Platform, Alert } from 'react-native';
+import { View, Text, Platform, Alert, NativeModules } from 'react-native';
 import MapView, { PROVIDER_GOOGLE, Marker, Callout } from 'react-native-maps';
 
 import getDirections from 'react-native-google-maps-directions';
 import GooglePlacesInput from './componentes/AutoComplete';
 import MapDirections from './componentes/DirectionsService';
 
+import language from './langs';
 import { getUserLocation, requestLocationPermission } from './services';
 
 import {
   copyArray,
+  filterObject,
   arrayFormatter,
   getAddressData,
   getCoordinatesData,
@@ -38,6 +40,7 @@ function MapComponent() {
   const [currentPosition, setCurrentPosition] = useState({});
   const [routeStatus, setRouteStatus] = useState({});
   const [selection, setSelection] = useState({});
+  const [locale, setLocale] = useState({});
 
   const { width, height } = mapStyle.dimensions;
 
@@ -68,8 +71,25 @@ function MapComponent() {
     }
   };
 
+  const getLanguage = () => {
+    const deviceLocale =
+      Platform.OS === 'ios'
+        ? NativeModules.SettingsManager.settings.AppleLocale
+        : NativeModules.I18nManager.localeIdentifier;
+
+    const hasLang = language.langs.includes(deviceLocale);
+
+    if (hasLang) {
+      const lang = filterObject(language, deviceLocale);
+      setLocale(lang[deviceLocale]);
+    } else {
+      setLocale(language.en_US);
+    }
+  };
+
   useEffect(() => {
     getPosition();
+    getLanguage();
   }, []);
 
   const handleClearInput = route => {
@@ -167,7 +187,7 @@ function MapComponent() {
               reference={c => (ref.current.firstInput = c)}
               location={currentPosition}
               selection={Platform.OS === 'android' ? selection : undefined}
-              placeholder="Type start of route"
+              placeholder={locale.placeholder_start}
               label="A"
               top={100}
               onFocus={() => setSelection({})}
@@ -205,7 +225,7 @@ function MapComponent() {
               reference={c => (ref.current.secondInput = c)}
               selection={Platform.OS === 'android' ? selection : undefined}
               location={currentPosition}
-              placeholder="Enter destination"
+              placeholder={locale.placeholder_end}
               label="B"
               top={50}
               onFocus={() => setSelection({})}
