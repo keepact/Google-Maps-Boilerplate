@@ -45,17 +45,15 @@ function MapComponent() {
 
   const [routeStatus, setRouteStatus] = useState({});
   const [selection, setSelection] = useState({});
-
   const [locale, setLocale] = useState({});
-  // const [watchID, setWatchID] = useState(null);
 
   const { width, height } = mapStyle.dimensions;
 
   const ref = useRef({
-    firstInput: '',
-    secondInput: '',
     mapView: '',
     watchID: null,
+    firstInput: '',
+    secondInput: '',
   });
 
   const getPosition = async () => {
