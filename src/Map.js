@@ -7,6 +7,8 @@ import React, {
   useReducer,
 } from 'react';
 
+import PropTypes from 'prop-types';
+
 import { View, Text, Platform } from 'react-native';
 import MapView, { PROVIDER_GOOGLE, Marker, Callout } from 'react-native-maps';
 
@@ -21,7 +23,7 @@ import {
   updateRouteStatus,
   clearRoute,
   overrideRoute,
-  initialState,
+  init,
   mapReducer,
 } from './store/map';
 
@@ -50,8 +52,8 @@ import {
   DescriptionContainer,
 } from './styles';
 
-function MapComponent() {
-  const [state, dispatch] = useReducer(mapReducer, initialState);
+function MapComponent({ initialState }) {
+  const [state, dispatch] = useReducer(mapReducer, initialState, init);
   const [currentPosition, setCurrentPosition, locale] = useContext(Context);
 
   const [selection, setSelection] = useState({});
@@ -106,7 +108,7 @@ function MapComponent() {
 
       dispatch(overrideRoute([newAddress], [newCoords]));
     } else if (coordinates.length === 1) {
-      dispatch(clearRoute());
+      dispatch(clearRoute(initialState));
     }
   };
 
@@ -278,5 +280,13 @@ function MapComponent() {
     </View>
   );
 }
+
+MapComponent.defaultProps = {
+  initialState: {},
+};
+
+MapComponent.propTypes = {
+  initialState: PropTypes.oneOfType([PropTypes.object]),
+};
 
 export default MapComponent;
