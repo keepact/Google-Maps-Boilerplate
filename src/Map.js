@@ -4,6 +4,7 @@ import React, {
   useEffect,
   useCallback,
   useContext,
+  useReducer,
 } from 'react';
 
 import { View, Text, Platform } from 'react-native';
@@ -14,6 +15,15 @@ import GooglePlacesInput from './componentes/AutoComplete';
 import MapDirections from './componentes/DirectionsService';
 
 import Context from './context';
+import {
+  updateCoordinates,
+  updateAddress,
+  updateRouteStatus,
+  clearRoute,
+  overrideRoute,
+  initialState,
+  mapReducer,
+} from './store/map';
 
 import { getWatchPosition, clearWatchPosition } from './services';
 
@@ -41,21 +51,19 @@ import {
 } from './styles';
 
 function MapComponent() {
-  const [address, setAddress] = useState([]);
-  const [coordinates, setCoordinates] = useState([]);
-  const [routeStatus, setRouteStatus] = useState({});
-  const [selection, setSelection] = useState({});
-
+  const [state, dispatch] = useReducer(mapReducer, initialState);
   const [currentPosition, setCurrentPosition, locale] = useContext(Context);
 
-  const { width, height } = mapStyle.dimensions;
-
+  const [selection, setSelection] = useState({});
   const ref = useRef({
     mapView: '',
     watchID: null,
     firstInput: '',
     secondInput: '',
   });
+
+  const { coordinates, address, routeStatus } = state;
+  const { width, height } = mapStyle.dimensions;
 
   const getNewPosition = useCallback(async () => {
     try {
@@ -96,20 +104,16 @@ function MapComponent() {
       const newAddress = arrayFormatter(cloneAddress, route);
       const newCoords = arrayFormatter(cloneCoords, route);
 
-      setAddress([newAddress]);
-      setCoordinates([newCoords]);
-      setRouteStatus({});
+      dispatch(overrideRoute([newAddress], [newCoords]));
     } else if (coordinates.length === 1) {
-      setAddress([]);
-      setCoordinates([]);
-      setRouteStatus({});
+      dispatch(clearRoute());
     }
   };
 
   const handleGetGoogleMapDirections = () => {
     const data = {
       source: coordinates[0],
-      destination: coordinates[coordinates.length - 1],
+      destination: coordinates[1],
       params: [
         {
           key: 'travelmode',
@@ -149,12 +153,9 @@ function MapComponent() {
                   coordinates.length > 2 ? coordinates.slice(1, -1) : null
                 }
                 origin={coordinates[0]}
-                destination={coordinates[coordinates.length - 1]}
+                destination={coordinates[1]}
                 onReady={result => {
-                  setRouteStatus({
-                    distance: result.distance,
-                    duration: result.duration,
-                  });
+                  dispatch(updateRouteStatus(result));
 
                   ref.current.mapView.fitToCoordinates(result.coordinates, {
                     edgePadding: {
@@ -189,20 +190,26 @@ function MapComponent() {
               onSubmit={(data, details = null) => {
                 ref.current.firstInput.value = 'value';
 
-                setAddress(
-                  address.length === 2 ||
-                    (address.length === 1 && !ref.current.secondInput.value)
-                    ? overiedFirstInput(address, getAddressData(data))
-                    : [getAddressData(data), ...address],
+                dispatch(
+                  updateAddress(
+                    address.length === 2 ||
+                      (address.length === 1 && !ref.current.secondInput.value)
+                      ? overiedFirstInput(address, getAddressData(data))
+                      : [getAddressData(data), ...address],
+                  ),
                 );
-                setCoordinates(
-                  coordinates.length === 2 ||
-                    (coordinates.length === 1 && !ref.current.secondInput.value)
-                    ? overiedFirstInput(
-                        coordinates,
-                        getCoordinatesData(details),
-                      )
-                    : [getCoordinatesData(details), ...coordinates],
+
+                dispatch(
+                  updateCoordinates(
+                    coordinates.length === 2 ||
+                      (coordinates.length === 1 &&
+                        !ref.current.secondInput.value)
+                      ? overiedFirstInput(
+                          coordinates,
+                          getCoordinatesData(details),
+                        )
+                      : [getCoordinatesData(details), ...coordinates],
+                  ),
                 );
               }}
             />
@@ -227,15 +234,23 @@ function MapComponent() {
               onSubmit={(data, details = null) => {
                 ref.current.secondInput.value = 'value';
 
-                setAddress(
-                  address.length === 2 || !ref.current.firstInput.value
-                    ? overiedLastInput(address, getAddressData(data))
-                    : [...address, getAddressData(data)],
+                dispatch(
+                  updateAddress(
+                    address.length === 2 || !ref.current.firstInput.value
+                      ? overiedLastInput(address, getAddressData(data))
+                      : [...address, getAddressData(data)],
+                  ),
                 );
-                setCoordinates(
-                  coordinates.length === 2 || !ref.current.firstInput.value
-                    ? overiedLastInput(coordinates, getCoordinatesData(details))
-                    : [...coordinates, getCoordinatesData(details)],
+
+                dispatch(
+                  updateCoordinates(
+                    coordinates.length === 2 || !ref.current.firstInput.value
+                      ? overiedLastInput(
+                          coordinates,
+                          getCoordinatesData(details),
+                        )
+                      : [...coordinates, getCoordinatesData(details)],
+                  ),
                 );
               }}
             />
