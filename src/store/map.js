@@ -29,15 +29,10 @@ export function mapReducer(state, action) {
     case Types.UPDATE_ROUTE_STATUS:
       return {
         ...state,
-        routeStatus: action.payload,
-      };
-
-    case Types.CLEAR_ROUTE:
-      return {
-        ...state,
-        coordinates: [],
-        address: [],
-        routeStatus: {},
+        routeStatus: {
+          distance: action.payload.result.distance,
+          duration: action.payload.result.duration,
+        },
       };
 
     case Types.OVERRIDE_ROUTE:
@@ -48,7 +43,49 @@ export function mapReducer(state, action) {
         routeStatus: {},
       };
 
+    case Types.CLEAR_ROUTE:
+      return {
+        ...state,
+        coordinates: [],
+        address: [],
+        routeStatus: {},
+      };
+
     default:
       return { ...state };
   }
+}
+
+export function updateCoordinates(coordinates) {
+  return {
+    type: Types.UPDATE_COORDINATES,
+    payload: { coordinates },
+  };
+}
+
+export function updateAddress(address) {
+  return {
+    type: Types.UPDATE_ADDRESS,
+    payload: { address },
+  };
+}
+
+export function updateRouteStatus(result) {
+  return {
+    type: Types.UPDATE_ROUTE_STATUS,
+    payload: { result },
+  };
+}
+
+export function overrideRoute(address, coordinates) {
+  return {
+    type: Types.OVERRIDE_ROUTE,
+    payload: { address, coordinates },
+  };
+}
+
+export function clearRoute() {
+  return {
+    type: Types.CLEAR_ROUTE,
+  };
 }
