@@ -1,19 +1,21 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, {
+  useState,
+  useRef,
+  useEffect,
+  useCallback,
+  useContext,
+} from 'react';
 
-import { View, Text, Platform, Alert } from 'react-native';
+import { View, Text, Platform } from 'react-native';
 import MapView, { PROVIDER_GOOGLE, Marker, Callout } from 'react-native-maps';
 
 import getDirections from 'react-native-google-maps-directions';
 import GooglePlacesInput from './componentes/AutoComplete';
 import MapDirections from './componentes/DirectionsService';
 
-import {
-  getUserLocation,
-  getWatchPosition,
-  clearWatchPosition,
-  getLanguage,
-  requestLocationPermission,
-} from './services';
+import Context from './context';
+
+import { getWatchPosition, clearWatchPosition } from './services';
 
 import {
   copyArray,
@@ -41,11 +43,10 @@ import {
 function MapComponent() {
   const [address, setAddress] = useState([]);
   const [coordinates, setCoordinates] = useState([]);
-  const [currentPosition, setCurrentPosition] = useState({});
-
   const [routeStatus, setRouteStatus] = useState({});
   const [selection, setSelection] = useState({});
-  const [locale, setLocale] = useState({});
+
+  const [currentPosition, setCurrentPosition, locale] = useContext(Context);
 
   const { width, height } = mapStyle.dimensions;
 
@@ -56,28 +57,7 @@ function MapComponent() {
     secondInput: '',
   });
 
-  const getPosition = async () => {
-    try {
-      const permission = await requestLocationPermission();
-
-      if (permission) {
-        const location = await getUserLocation();
-        const { latitude, longitude } = location.coords;
-
-        setCurrentPosition({
-          latitude,
-          longitude,
-          latitudeDelta: 0.015,
-          longitudeDelta: 0.0121,
-        });
-      }
-    } catch (err) {
-      console.tron.log(err);
-      Alert.alert('There was an error in getting latitude and longitude.');
-    }
-  };
-
-  const getNewPosition = async () => {
+  const getNewPosition = useCallback(async () => {
     try {
       ref.current.watchID = await getWatchPosition();
       const { latitude, longitude } = ref.current.watchID.coords;
@@ -91,19 +71,14 @@ function MapComponent() {
     } catch (err) {
       console.tron.log(err);
     }
-  };
+  }, [setCurrentPosition]);
 
   useEffect(() => {
     getNewPosition();
 
     return () =>
       ref.current.watchID != null && clearWatchPosition(ref.current.watchID);
-  }, [ref.current.watchID]);
-
-  useEffect(() => {
-    getPosition();
-    setLocale(getLanguage());
-  }, []);
+  }, [getNewPosition, ref.current.watchID]);
 
   const handleClearInput = route => {
     if (route === 'start') {
