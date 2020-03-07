@@ -17,6 +17,23 @@ export const getUserLocation = () =>
     );
   });
 
+export const getWatchPosition = () =>
+  new Promise((resolve, reject) => {
+    navigator.geolocation.watchPosition(
+      location => resolve(location),
+      error => reject(error),
+      {
+        enableHighAccuracy: true,
+        timeout: 20000,
+        maximumAge: 1000,
+      },
+    );
+  });
+
+export const clearWatchPosition = watchID => {
+  navigator.geolocation.clearWatch(watchID);
+};
+
 export const getLanguage = () => {
   const deviceLocale =
     Platform.OS === 'ios'

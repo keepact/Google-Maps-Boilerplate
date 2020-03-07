@@ -9,6 +9,8 @@ import MapDirections from './componentes/DirectionsService';
 
 import {
   getUserLocation,
+  getWatchPosition,
+  clearWatchPosition,
   getLanguage,
   requestLocationPermission,
 } from './services';
@@ -40,9 +42,12 @@ function MapComponent() {
   const [address, setAddress] = useState([]);
   const [coordinates, setCoordinates] = useState([]);
   const [currentPosition, setCurrentPosition] = useState({});
+
   const [routeStatus, setRouteStatus] = useState({});
   const [selection, setSelection] = useState({});
+
   const [locale, setLocale] = useState({});
+  // const [watchID, setWatchID] = useState(null);
 
   const { width, height } = mapStyle.dimensions;
 
@@ -50,6 +55,7 @@ function MapComponent() {
     firstInput: '',
     secondInput: '',
     mapView: '',
+    watchID: null,
   });
 
   const getPosition = async () => {
@@ -72,6 +78,29 @@ function MapComponent() {
       Alert.alert('There was an error in getting latitude and longitude.');
     }
   };
+
+  const getNewPosition = async () => {
+    try {
+      ref.current.watchID = await getWatchPosition();
+      const { latitude, longitude } = ref.current.watchID.coords;
+
+      setCurrentPosition({
+        latitude,
+        longitude,
+        latitudeDelta: 0.015,
+        longitudeDelta: 0.0121,
+      });
+    } catch (err) {
+      console.tron.log(err);
+    }
+  };
+
+  useEffect(() => {
+    getNewPosition();
+
+    return () =>
+      ref.current.watchID != null && clearWatchPosition(ref.current.watchID);
+  }, [ref.current.watchID]);
 
   useEffect(() => {
     getPosition();
