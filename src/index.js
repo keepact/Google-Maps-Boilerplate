@@ -11,8 +11,6 @@ import Context from './context';
 
 import './config/ReactotronConfig';
 
-navigator.geolocation = require('@react-native-community/geolocation');
-
 const App = () => {
   const [currentPosition, setCurrentPosition] = useState({});
   const [locale, setLocale] = useState({});
