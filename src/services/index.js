@@ -1,3 +1,4 @@
+import Geolocation from 'react-native-geolocation-service';
 import { request, PERMISSIONS, RESULTS } from 'react-native-permissions';
 import { Platform, NativeModules } from 'react-native';
 
@@ -6,7 +7,7 @@ import language from '../langs';
 
 export const getUserLocation = () =>
   new Promise((resolve, reject) => {
-    navigator.geolocation.getCurrentPosition(
+    Geolocation.getCurrentPosition(
       location => resolve(location),
       error => reject(error),
       {
@@ -19,7 +20,7 @@ export const getUserLocation = () =>
 
 export const getWatchPosition = () =>
   new Promise((resolve, reject) => {
-    navigator.geolocation.watchPosition(
+    Geolocation.watchPosition(
       location => resolve(location),
       error => reject(error),
       {
@@ -31,7 +32,7 @@ export const getWatchPosition = () =>
   });
 
 export const clearWatchPosition = watchID => {
-  navigator.geolocation.clearWatch(watchID);
+  Geolocation.clearWatch(watchID);
 };
 
 export const getLanguage = () => {
