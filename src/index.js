@@ -1,6 +1,10 @@
 import React, { useState, useEffect } from 'react';
 
-import { getLanguage, getUserLocation } from './services';
+import {
+  getLanguage,
+  getUserLocation,
+  requestLocationPermission,
+} from './services';
 
 import MapComponent from './Map';
 import Context from './context';
@@ -40,8 +44,7 @@ const App = () => {
   }, []);
 
   return (
-    <Context.Provider
-      value={[currentPosition, setCurrentPosition, locale, setLocale]}>
+    <Context.Provider value={[currentPosition, setCurrentPosition, locale]}>
       <MapComponent />
     </Context.Provider>
   );
