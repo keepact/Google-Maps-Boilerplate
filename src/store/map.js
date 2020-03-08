@@ -6,7 +6,7 @@ export const Types = {
   CLEAR_ROUTE: '@map/CLEAR_ROUTE',
 };
 
-export const init = _initialState => ({
+export const init = () => ({
   coordinates: [],
   address: [],
   routeStatus: {},
@@ -44,7 +44,7 @@ export function mapReducer(state, action) {
       };
 
     case Types.CLEAR_ROUTE:
-      return init(action.payload);
+      return init();
     default:
       return { ...state };
   }

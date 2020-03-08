@@ -108,7 +108,7 @@ function MapComponent({ initialState }) {
 
       dispatch(overrideRoute([newAddress], [newCoords]));
     } else if (coordinates.length === 1) {
-      dispatch(clearRoute(initialState));
+      dispatch(clearRoute());
     }
   };
 
