@@ -48,7 +48,6 @@ import {
   RouteData,
   BoldText,
   RouteText,
-  OverlayData,
   DescriptionContainer,
 } from './styles';
 
@@ -58,8 +57,8 @@ function MapComponent({ initialState }) {
 
   const [selection, setSelection] = useState({});
   const ref = useRef({
-    mapView: '',
     watchID: null,
+    mapView: '',
     firstInput: '',
     secondInput: '',
   });
@@ -260,7 +259,7 @@ function MapComponent({ initialState }) {
         </InputsContainer>
       </Container>
       {coordinates.length >= 2 && (
-        <OverlayData>
+        <>
           {!isNaN(routeStatus.distance) && !isNaN(routeStatus.duration) && (
             <RouteData>
               <RouteText>
@@ -275,7 +274,7 @@ function MapComponent({ initialState }) {
           <ButtonNavigate onPress={handleGetGoogleMapDirections}>
             <BoldText>Start</BoldText>
           </ButtonNavigate>
-        </OverlayData>
+        </>
       )}
     </View>
   );

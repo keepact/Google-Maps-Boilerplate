@@ -4,6 +4,7 @@ import { StyleSheet, Dimensions } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 
 export const Container = styled.View`
+  position: absolute;
   flex-direction: column-reverse;
 `;
 
@@ -31,7 +32,7 @@ export const ButtonNavigate = styled.TouchableOpacity`
   border-radius: 7px;
   margin-bottom: 15px;
   margin: 0 50px;
-  top: 65%;
+  top: 300px;
   left: 60%;
 `;
 
@@ -42,11 +43,9 @@ export const RouteData = styled.View`
   background-color: #0747a6;
   border-radius: 7px;
   align-items: center;
-  border-width: 1px;
+  align-self: center;
   border-color: #000;
-  margin-bottom: 15px;
-  margin: 0 50px;
-  top: 110px;
+  margin: 110px 0 15px 0;
 `;
 
 export const RouteText = styled.Text`
@@ -57,15 +56,6 @@ export const RouteText = styled.Text`
 export const BoldText = styled.Text`
   color: #000;
   font-weight: bold;
-`;
-
-export const OverlayData = styled.View`
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  width: 100%;
 `;
 
 export const DescriptionContainer = styled.View`
